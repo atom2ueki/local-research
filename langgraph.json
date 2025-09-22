@@ -1,0 +1,14 @@
+{
+  "dockerfile_lines": [],
+  "graphs": {
+    "scope": "./src/local_research/research_scope.py:scope_research",
+    "researcher": "./src/local_research/research_agent.py:researcher_agent",
+    "supervisor": "./src/local_research/research_supervisor.py:supervisor_agent",
+    "agent": "./src/local_research/agent.py:agent"
+  },
+  "python_version": "3.11",
+  "env": ".env",
+  "dependencies": [
+    "."
+  ]
+}
