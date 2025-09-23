@@ -1,9 +1,10 @@
 {
   "dockerfile_lines": [],
   "graphs": {
-    "scope": "./src/local_research/research_scope.py:scope_research",
+    "scope": "./src/local_research/research_scope.py:research_scope",
     "researcher": "./src/local_research/research_agent.py:researcher_agent",
     "supervisor": "./src/local_research/research_supervisor.py:supervisor_agent",
+    "reporter": "./src/local_research/research_report.py:research_report",
     "agent": "./src/local_research/agent.py:agent"
   },
   "python_version": "3.11",

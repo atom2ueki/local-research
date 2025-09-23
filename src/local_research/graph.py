@@ -1,20 +1,18 @@
-# try:
-#     from dotenv import load_dotenv
-#     load_dotenv()
-# except ImportError:
-#     pass
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
-# from IPython.display import Image, display
-# from langgraph.checkpoint.memory import InMemorySaver
-# from src.local_research.research_scope import deep_researcher_builder
+from local_research.agent import agent
 
-# checkpointer = InMemorySaver()
-# scope = deep_researcher_builder.compile(checkpointer=checkpointer)
-# display(Image(scope.get_graph(xray=True).draw_mermaid_png()))
+def generate_agent_graph():
+    """Generate PNG image of the agent workflow."""
 
+    agent_png = agent.get_graph(xray=True).draw_mermaid_png()
+    with open("agent_graph.png", "wb") as f:
+        f.write(agent_png)
+    print("Generated agent_graph.png")
 
-# from IPython.display import Image, display
-# from local_research.research_agent import researcher_agent
-
-# # Show the agent
-# display(Image(researcher_agent.get_graph(xray=True).draw_mermaid_png()))
+if __name__ == "__main__":
+    generate_agent_graph()

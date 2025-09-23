@@ -24,6 +24,29 @@ def get_current_dir() -> Path:
     except NameError:  # __file__ is not defined
         return Path.cwd()
 
+def get_project_root() -> Path:
+    """Get the project root directory by looking for common project markers.
+
+    Returns:
+        Path object representing the project root directory
+    """
+    try:
+        # Start from the current file's directory
+        current = Path(__file__).resolve().parent
+
+        # Look for common project root markers
+        markers = ['pyproject.toml', '.git', 'setup.py', 'requirements.txt']
+
+        # Walk up the directory tree
+        for parent in [current] + list(current.parents):
+            if any((parent / marker).exists() for marker in markers):
+                return parent
+
+        # Fallback to two levels up from current module
+        return current.parent.parent
+    except NameError:  # __file__ is not defined (e.g., in Jupyter)
+        return Path.cwd()
+
 def format_message_content(message):
     """Convert message content to displayable string"""
     parts = []

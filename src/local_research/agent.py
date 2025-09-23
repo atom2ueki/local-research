@@ -11,59 +11,55 @@ The system orchestrates the complete research workflow from initial user
 input through final report delivery.
 """
 
-from langchain_core.messages import HumanMessage
 from langgraph.graph import StateGraph, START, END
 
-from local_research.utils import get_today_str
-from local_research.prompts import final_report_generator_prompt
 from local_research.state import AgentState, AgentInputState
-from local_research.research_scope import clarify_with_user, write_research_brief
+from local_research.research_scope import research_scope
 from local_research.research_supervisor import supervisor_agent
+from local_research.research_report import research_report
 
-# ===== Config =====
+# ===== ROUTING LOGIC =====
 
-from langchain.chat_models import init_chat_model
-writer_model = init_chat_model(model="openai:gpt-4.1", max_tokens=32000) # model="anthropic:claude-sonnet-4-20250514", max_tokens=64000
-
-async def final_report_generation(state: AgentState):
+def route_after_scoping(state: AgentState) -> str:
     """
-    Final report generation node.
+    Route from scope_subgraph based on whether clarification was needed.
 
-    Synthesizes all research findings into a comprehensive final report
+    If research_brief exists, it means scoping completed successfully and we can proceed.
+    If no research_brief exists, it means clarification was needed and we should end.
     """
+    research_brief = state.get("research_brief")
 
-    notes = state.get("notes", [])
-
-    findings = "\n".join(notes)
-
-    final_report_prompt = final_report_generator_prompt.format(
-        research_brief=state.get("research_brief", ""),
-        findings=findings,
-        date=get_today_str()
-    )
-
-    final_report = await writer_model.ainvoke([HumanMessage(content=final_report_prompt)])
-
-    return {
-        "final_report": final_report.content,
-        "messages": ["Here is the final report: " + final_report.content],
-    }
+    if research_brief:
+        # Research brief was generated, proceed to supervisor
+        return "supervisor_subgraph"
+    else:
+        # No research brief means clarification was needed, end the workflow
+        return "__end__"
 
 # ===== GRAPH CONSTRUCTION =====
 # Build the overall workflow
 deep_researcher_builder = StateGraph(AgentState, input_schema=AgentInputState)
 
 # Add workflow nodes
-deep_researcher_builder.add_node("clarify_with_user", clarify_with_user)
-deep_researcher_builder.add_node("write_research_brief", write_research_brief)
+deep_researcher_builder.add_node("scope_subgraph", research_scope)
 deep_researcher_builder.add_node("supervisor_subgraph", supervisor_agent)
-deep_researcher_builder.add_node("final_report_generation", final_report_generation)
+deep_researcher_builder.add_node("report_subgraph", research_report)
 
 # Add workflow edges
-deep_researcher_builder.add_edge(START, "clarify_with_user")
-deep_researcher_builder.add_edge("write_research_brief", "supervisor_subgraph")
-deep_researcher_builder.add_edge("supervisor_subgraph", "final_report_generation")
-deep_researcher_builder.add_edge("final_report_generation", END)
+deep_researcher_builder.add_edge(START, "scope_subgraph")
+
+# Add conditional routing from scope_subgraph
+deep_researcher_builder.add_conditional_edges(
+    "scope_subgraph",
+    route_after_scoping,
+    {
+        "__end__": END,
+        "supervisor_subgraph": "supervisor_subgraph"
+    }
+)
+
+deep_researcher_builder.add_edge("supervisor_subgraph", "report_subgraph")
+deep_researcher_builder.add_edge("report_subgraph", END)
 
 # Compile the full workflow
 agent = deep_researcher_builder.compile()

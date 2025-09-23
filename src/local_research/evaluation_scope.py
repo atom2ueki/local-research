@@ -12,7 +12,7 @@ try:
 except ImportError:
     pass
 
-from local_research.research_scope import scope_research
+from local_research.research_scope import research_scope
 
 conversation_1 = [
     HumanMessage(content="What's the best way to invest $50,000 for retirement?"),
@@ -201,7 +201,7 @@ def evaluate_no_assumptions(outputs: dict, reference_outputs: dict):
 
 def target_func(inputs: dict):
     config = {"configurable": {"thread_id": uuid.uuid4()}}
-    return scope_research.invoke(inputs, config=config)
+    return research_scope.invoke(inputs, config=config)
 
 langsmith_client.evaluate(
     target_func,

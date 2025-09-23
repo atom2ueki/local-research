@@ -70,15 +70,15 @@ def write_research_brief(state: AgentState):
 
 
 # Build the scoping workflow
-deep_researcher_builder = StateGraph(AgentState, input_schema=AgentInputState)
+research_scope_builder = StateGraph(AgentState, input_schema=AgentInputState)
 
 # Add workflow nodes
-deep_researcher_builder.add_node("clarify_with_user", clarify_with_user)
-deep_researcher_builder.add_node("write_research_brief", write_research_brief)
+research_scope_builder.add_node("clarify_with_user", clarify_with_user)
+research_scope_builder.add_node("write_research_brief", write_research_brief)
 
 # Add workflow edges
-deep_researcher_builder.add_edge(START, "clarify_with_user")
-deep_researcher_builder.add_edge("write_research_brief", END)
+research_scope_builder.add_edge(START, "clarify_with_user")
+research_scope_builder.add_edge("write_research_brief", END)
 
 # Compile the workflow
-scope_research = deep_researcher_builder.compile()
+research_scope = research_scope_builder.compile()
