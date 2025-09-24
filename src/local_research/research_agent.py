@@ -3,7 +3,7 @@ from typing_extensions import Literal
 
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage, filter_messages
-from langchain.chat_models import init_chat_model
+from local_research.model_config import get_research_model, get_summarization_model, get_compress_model
 
 from local_research.state import ResearcherState, ResearcherOutputState
 from local_research.tools import tavily_search, think_tool
@@ -18,10 +18,10 @@ tools = [tavily_search, think_tool]
 tools_by_name = {tool.name: tool for tool in tools}
 
 # Initialize models
-model = init_chat_model(model="anthropic:claude-sonnet-4-20250514")
+model = get_research_model()
 model_with_tools = model.bind_tools(tools)
-summarization_model = init_chat_model(model="openai:gpt-4.1-mini")
-compress_model = init_chat_model(model="openai:gpt-4.1", max_tokens=32000)
+summarization_model = get_summarization_model()
+compress_model = get_compress_model(max_tokens=32000)
 
 # ===== AGENT NODES =====
 

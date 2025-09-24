@@ -1,4 +1,5 @@
 .env
+.qwen
 .venv
 __pycache__
 .langgraph_api/

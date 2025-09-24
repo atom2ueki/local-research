@@ -1,4 +1,4 @@
-from langchain.chat_models import init_chat_model
+from local_research.model_config import get_summarization_model
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool, InjectedToolArg
 from typing_extensions import Annotated, List, Literal
@@ -11,7 +11,7 @@ from local_research.prompts import summarize_webpage_prompt
 from pydantic import BaseModel, Field
 
 tavily_client = TavilyClient()
-summarization_model = init_chat_model(model="openai:gpt-4.1-mini")
+summarization_model = get_summarization_model()
 
 def tavily_search_multiple(
     search_queries: List[str],

@@ -1,6 +1,6 @@
 from typing_extensions import Literal
 
-from langchain.chat_models import init_chat_model
+from local_research.model_config import get_scope_model
 from langchain_core.messages import HumanMessage, AIMessage, get_buffer_string
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
@@ -11,7 +11,7 @@ from local_research.state import AgentState, ClarifyWithUser, ResearchQuestion, 
 from local_research.utils import get_today_str
 
 
-model = init_chat_model(model="openai:gpt-4.1", temperature=0.0)
+model = get_scope_model(temperature=0.0)
 
 def clarify_with_user(state: AgentState) -> Command[Literal["write_research_brief", "__end__"]]:
     """

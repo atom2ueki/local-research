@@ -10,8 +10,8 @@ from typing_extensions import Literal
 
 # ===== Config =====
 
-from langchain.chat_models import init_chat_model
-writer_model = init_chat_model(model="openai:gpt-4.1", max_tokens=32000) # model="anthropic:claude-sonnet-4-20250514", max_tokens=64000
+from local_research.model_config import get_report_model
+writer_model = get_report_model(max_tokens=32000)
 
 mcp_config = {
     "filesystem": {
